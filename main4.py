@@ -3,12 +3,11 @@ def running(name):
     print(f'Running: {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 from pathlib import Path
-from aoc.Day4 import *
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     running('AOC Day 4')
-    filename = Path.joinpath( Path.cwd(), 'venv', 'input/Day4.txt')
+    filename = Path.joinpath( Path.cwd(), 'input/Day4.txt')
 
     backpacks = []
     with open(filename, 'r') as file:

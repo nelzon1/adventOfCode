@@ -8,7 +8,7 @@ from aoc.Day3 import Backpack
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     running('AOC Day 3')
-    filename = Path.joinpath( Path.cwd(), 'venv', 'input/Day3.txt')
+    filename = Path.joinpath( Path.cwd(), 'input/Day3.txt')
 
     backpacks = []
     with open(filename, 'r') as file:

@@ -8,7 +8,7 @@ import aoc.Day1 as d1
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     running('AOC Day 1')
-    filename = Path.joinpath( Path.cwd(), 'venv', 'input/Day1.txt')
+    filename = Path.joinpath( Path.cwd(), 'input/Day1.txt')
     day1Reader = d1.Day1Reader(filename)
     day1Reader.readFile()
     #finalData = zip(range(len(day1Reader.elves)),[x.calories for x in day1Reader.elves])

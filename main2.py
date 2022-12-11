@@ -8,7 +8,7 @@ import aoc.Day2 as d2
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     running('AOC Day 2')
-    filename = Path.joinpath( Path.cwd(), 'venv', 'input/Day2.txt')
+    filename = Path.joinpath( Path.cwd(), 'input/Day2.txt')
 
     games = []
     with open(filename, 'r') as file:
