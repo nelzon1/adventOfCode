@@ -25,7 +25,7 @@ class Computer:
 
     def drawScreen(self):
         for row in self.screen:
-            print('|->', row, '<-|')
+            print('|->', ' '.join(row), '<-|')
 
 
     def noop(self):
