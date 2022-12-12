@@ -86,7 +86,6 @@ if __name__ == '__main__':
             print(round+1,' rounds complete.')
             fprint(monkeys)
 
-
     cnt = 0
     for monkey in monkeys:
         print('Monkey',cnt,' inspections: ', monkey.inspections)
@@ -94,5 +93,4 @@ if __name__ == '__main__':
     #monkeys.sort(key=lambda x: x.inspections, reverse=True)
     monkeyBusiness = sorted(monkeys, key=lambda x: x.inspections, reverse=True)[0:2]
     print('Monkey Business after ',ROUNDS,' rounds: ', monkeyBusiness[0].inspections * monkeyBusiness[1].inspections)
-    print()
 
