@@ -38,8 +38,12 @@ class Tile:
         self.value = 10**4
 
     def compareTile(self, b):
-        return b.height - self.height <= 1 and b != self and b.value > self.value + 1
-def step(tile, val, heightMap, parent):
+        return b.height - self.height <= 1 and b != self and not b.visited # and b.value > self.value + 1
+
+    def compareTileBackward(self, b):
+        return b.height - self.height >= -1 and b != self and not b.visited
+
+def step(tile, val, heightMap, parent, direction=True):
     testTiles = []
     try:  # check up
         if tile.y > 0:
@@ -59,7 +63,10 @@ def step(tile, val, heightMap, parent):
         testTiles.append( heightMap[tile.y][tile.x + 1])
     except IndexError:
         None
-    return [[x, tile.value+1, tile] for x in testTiles if tile.compareTile(x)]
+    if direction:
+        return [[x, val+1, tile] for x in testTiles if tile.compareTile(x)]
+    else:
+        return [[x, val + 1, tile] for x in testTiles if tile.compareTileBackward(x)]
 
 
 if __name__ == '__main__':
@@ -68,7 +75,7 @@ if __name__ == '__main__':
     puzzle = ''
     START = (20, 0)
     STARTTEST = (0, 0)
-    EXIT = (20, 45)
+    EXIT = (20, 46)
     EXITTEST = (2, 5)
     with open(filename, 'r') as file:
         puzzle = [x.strip() for x in file.readlines()]
@@ -84,17 +91,18 @@ if __name__ == '__main__':
     finished = False
     startValue = 0
 
-    #priorityQueue = [ [Map[STARTTEST[0]][STARTTEST[1]], startValue, None] ]
+    priorityQueue = [ [Map[STARTTEST[0]][STARTTEST[1]], startValue, None] ]
     priorityQueue = [ [Map[START[0]][START[1]], startValue, None] ]
+    #pDic = { 1: {Map[START[0]][START[1]]} }
 
     while (len(priorityQueue) > 0):
         queueItem = priorityQueue.pop(0)
         tile = queueItem[0]
-        if tile.visited and queueItem[1] >= Values[tile.y][tile.x]:
+        if tile.visited:
             continue
         tile.visited = True
         #update Value Map
-        tile.value = queueItem[1] if queueItem[1] < tile.value else tile.value
+        tile.value = queueItem[1]  #if queueItem[1] < tile.value else tile.value
         Values[tile.y][tile.x] = tile.value
         priorityQueue += step(tile, queueItem[1], Map, queueItem[2])
         priorityQueue.sort(key=lambda x: x[1])
@@ -102,8 +110,9 @@ if __name__ == '__main__':
         #if tile.exit:
         #    break
 
-    #steps = Values[EXITTEST[0]][EXITTEST[1]]
-    steps = Values[EXIT[0]][EXIT[1]]
+    steps = Values[EXITTEST[0]][EXITTEST[1]]
+    steps = Map[EXITTEST[0]][EXITTEST[1]].value
+    steps = Map[EXIT[0]][EXIT[1]].value
     print("Optimal route found, it takes: ", steps, " steps.")
     print("Result:")
     # for row in Map:
@@ -111,3 +120,27 @@ if __name__ == '__main__':
     # for row in Values:
     #     print(' '.join([f'{x:02}' for x in row]))
 
+
+    Values = [[10**6 for y in range(gridY)] for x in range(gridX)]
+
+    # pDic = { 1: {Map[START[0]][START[1]]} }
+    for i in range(gridX):
+        for j in range(gridY):
+            Map[i][j] = Tile(puzzle[i][j],j,i)
+
+    priorityQueue = [[Map[EXIT[0]][EXIT[1]], startValue, None]]
+
+    while (len(priorityQueue) > 0):
+        queueItem = priorityQueue.pop(0)
+        tile = queueItem[0]
+        if tile.visited:
+            continue
+        tile.visited = True
+        # update Value Map
+        tile.value = queueItem[1]  # if queueItem[1] < tile.value else tile.value
+        Values[tile.y][tile.x] = tile.value
+        priorityQueue += step(tile, queueItem[1], Map, queueItem[2], direction=False)
+        priorityQueue.sort(key=lambda x: x[1])
+
+    shortestPath = min(min([x.value for x in row if x.height == 1]) for row in Map)
+    print("Shortest possible path: ", shortestPath)
