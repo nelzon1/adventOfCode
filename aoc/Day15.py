@@ -105,33 +105,33 @@ if __name__ == '__main__':
         coords = [ [int(z) for z in re.compile('(-?\\d+)').findall(line)] for line in file.readlines() ]
     OFFSET = max([ max([x[0], x[2]]) for x in coords ]) - min([ min([x[0],x[2]]) for x in coords]) + 1
     OFFSETY = max([max([x[1], x[3]]) for x in coords ]) - min([min([x[1], x[3]]) for x in coords]) + 1
-    Array = ['.' for i in range( OFFSET  * 3 ) ]
-    NewArray = [RangeSet() for x in range(OFFSETY * 3)]
-    for sensor in coords:
-        addRange( getRange((sensor[0],sensor[1]),(sensor[2],sensor[3]), Array), Array )
-    print("RowIndex: ", ROWINDEX)
-    print("Number of positions not containing a beacon: ", sum([1 for x in Array if x == '#']))
+    # Array = ['.' for i in range( OFFSET  * 3 ) ]
+    # NewArray = [RangeSet() for x in range(OFFSETY * 3)]
+    # for sensor in coords:
+    #     addRange( getRange((sensor[0],sensor[1]),(sensor[2],sensor[3]), Array), Array )
+    # print("RowIndex: ", ROWINDEX)
+    # print("Number of positions not containing a beacon: ", sum([1 for x in Array if x == '#']))
 
-    for sensor in coords:
-        applySensor((sensor[0], sensor[1]), (sensor[2], sensor[3]), NewArray)
-
-    WINDOW = Range(0, MAXINDEX)
-
-    #tilesToTakeAway = sum([1 for x in coords if x[1] == ROWINDEX or x[3] == ROWINDEX])
-    tilesToTakeAway = set()
-    for row in coords:
-        if row[1] == ROWINDEX:
-            tilesToTakeAway.add(tuple([row[0], row[1]]))
-        if row[3] == ROWINDEX:
-            tilesToTakeAway.add(tuple([row[2], row[3]]))
-
-    print("Number of positions not containing a beacon in row ", ROWINDEX, ": ", NewArray[OFFSETY + ROWINDEX].length() - len(tilesToTakeAway))
-    for i, range in enumerate(NewArray[OFFSETY:OFFSETY * 2]):
-        range.intersect(WINDOW)
-        if len (range.ranges) > 1:
-            print("Beacon location found: (", range.ranges[0].end + 1, ", ", i, ").")
-            print("Their Freq is: ", (range.ranges[0].end + 1 ) * 4000000 + i )
-            break
+    # for sensor in coords:
+    #     applySensor((sensor[0], sensor[1]), (sensor[2], sensor[3]), NewArray)
+    #
+    # WINDOW = Range(0, MAXINDEX)
+    #
+    # #tilesToTakeAway = sum([1 for x in coords if x[1] == ROWINDEX or x[3] == ROWINDEX])
+    # tilesToTakeAway = set()
+    # for row in coords:
+    #     if row[1] == ROWINDEX:
+    #         tilesToTakeAway.add(tuple([row[0], row[1]]))
+    #     if row[3] == ROWINDEX:
+    #         tilesToTakeAway.add(tuple([row[2], row[3]]))
+    #
+    # print("Number of positions not containing a beacon in row ", ROWINDEX, ": ", NewArray[OFFSETY + ROWINDEX].length() - len(tilesToTakeAway))
+    # for i, range in enumerate(NewArray[OFFSETY:OFFSETY * 2]):
+    #     range.intersect(WINDOW)
+    #     if len (range.ranges) > 1:
+    #         print("Beacon location found: (", range.ranges[0].end + 1, ", ", i, ").")
+    #         print("Their Freq is: ", (range.ranges[0].end + 1 ) * 4000000 + i )
+    #         #break
 
     # jtest = RangeSet()
     # jtest.add(Range(3, 7))
@@ -146,5 +146,26 @@ if __name__ == '__main__':
     # jtest.intersect(Range(5, 10))
     # print(jtest.ranges)
 
-
+    #create a list of sensor coords and their excluded "distance"
+    sensors = [[x[0], x[1], abs(x[0] - x[2]) + abs(x[1] - x[3])] for x in coords]
+    #
+    curPos = 0
+    # loop over row 0 to 4000000
+    solved = False
+    for row in range(0, MAXINDEX + 1):
+        # in each row, loop over each sensor
+        # if it reaches, add to candidates & order candidates by left-most index
+        touchingSensors = [[x[0], x[1], x[0] - (x[2] - abs(x[1] - row)), x[2] - abs(x[1] - row) ] for x in sensors if abs(x[1] - row) <= x[2]]
+        curPos = 0
+        touchingSensors.sort(key=lambda x: x[2])
+        # loop through candidates, if there is a gap, stop and report it
+        for sens in touchingSensors:
+            if curPos == sens[2] - 2:
+                solved = True
+                break
+            curPos = sens[0] + sens[3] if sens[0] + sens[3] > curPos else curPos
+        if solved:
+            print('The x, y position is ', curPos + 1, row)
+            print('The tuning frequency is: ', (curPos + 1) * 400000 + row)
+            solved = False
 
