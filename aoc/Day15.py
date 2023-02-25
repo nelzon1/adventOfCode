@@ -166,6 +166,6 @@ if __name__ == '__main__':
             curPos = sens[0] + sens[3] if sens[0] + sens[3] > curPos else curPos
         if solved:
             print('The x, y position is ', curPos + 1, row)
-            print('The tuning frequency is: ', (curPos + 1) * 400000 + row)
+            print('The tuning frequency is: ', (curPos + 1) * 4000000 + row)
             solved = False
 
